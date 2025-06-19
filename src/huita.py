@@ -7,7 +7,7 @@ import Levenshtein
 import os
 
 
-CONFIDENCE_THRESHOLD = 0.5
+CONFIDENCE_THRESHOLD = 0.3
 MIN_PLATE_LENGTH = 5
     
 reader = easyocr.Reader(
@@ -85,7 +85,7 @@ def main(input_path, output_path, yolo_path):
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 roi = frame[y1:y2, x1:x2]
                 ocr_results = reader.readtext(roi)
-
+                
                 best_text = ""
                 best_conf = 0.0
                 for ocr_res in ocr_results:
@@ -93,7 +93,6 @@ def main(input_path, output_path, yolo_path):
                     if conf > best_conf:
                         best_text = text
                         best_conf = conf
-
                 norm_text = normalize_plate(best_text)
                 if best_conf > CONFIDENCE_THRESHOLD and norm_text:
                     plate_confidences[norm_text] = {
@@ -144,8 +143,8 @@ def main(input_path, output_path, yolo_path):
 
                     norm_text = normalize_plate(best_text)
                     if best_ocr_conf > CONFIDENCE_THRESHOLD and norm_text:
-                        if norm_text not in plate_confidences or plate_confidences[norm_text]['confidence'] < best_ocr_conf:
-                            plate_confidences[norm_text] = {
+                       if norm_text not in plate_confidences or plate_confidences[norm_text]['confidence'] < best_ocr_conf:
+                           plate_confidences[norm_text] = {
                                 "confidence": best_ocr_conf,
                                 "timestamp": timestamp_str
                             }
