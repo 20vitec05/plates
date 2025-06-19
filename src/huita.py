@@ -4,6 +4,8 @@ from collections import defaultdict
 from ultralytics import YOLO
 import re
 import Levenshtein
+import os
+
 
 CONFIDENCE_THRESHOLD = 0.5
 MIN_PLATE_LENGTH = 5
@@ -72,8 +74,9 @@ def main(input_path, output_path, yolo_path):
     
     model = YOLO(yolo_path)
     IS_IMAGE = input_path.lower().endswith(('.jpg', '.jpeg', '.png'))
-
+    
     if IS_IMAGE:
+
         frame = cv2.imread(input_path)
         results = model(frame, verbose=False)
 
@@ -200,7 +203,7 @@ def main(input_path, output_path, yolo_path):
     if best_plates_overall:
         plates_texts = {}
         for i, (text, data) in enumerate(best_plates_overall, 1):
-            plates_texts[text] = {data['confidence']:.4f, data['timestamp']}}
+            plates_texts[text] = {'confidence': round(float(data['confidence']), 4), 'timestamp': data['timestamp']}
         return plates_texts
     else:
         return 0
